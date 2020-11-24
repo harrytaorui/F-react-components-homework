@@ -27,13 +27,39 @@ class Chat extends Component {
     }, 1000);
   }
 
+  replyMessage = (input, dialog) => {
+    const defaultMessage = answersData.find((answer) =>
+      answer.tags.some((tag) => input.text.includes(tag))
+    );
+    if (defaultMessage) {
+      const messages = dialog.concat(defaultMessage);
+      setTimeout(() => {
+        this.setState({
+          messages,
+        });
+      }, 1000);
+    }
+  };
+
+  getMessage = (input) => {
+    const messages = this.state.messages.concat(input);
+    setTimeout(() => {
+      this.setState(
+        {
+          messages,
+        },
+        () => this.replyMessage(input, messages)
+      );
+    }, 0);
+  };
+
   render() {
     const { shop, messages } = this.state;
     return (
       <main className="Chat">
         <ChatHeader shop={shop} />
         <ChatBox messages={messages} />
-        <ChatInput />
+        <ChatInput getMessage={this.getMessage} />
       </main>
     );
   }
